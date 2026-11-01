@@ -88,14 +88,19 @@ if st.button("Estimate risk", type="primary"):
     row.loc[0, "race"] = race
     row.loc[0, "gender"] = gender
 
-    risk = predict_proba(model, row)[0]
+    score = predict_proba(model, row)[0]
 
-    st.metric("Estimated 30-day readmission risk", f"{risk:.1%}")
-    if risk >= 0.5:
-        st.warning("Above the model's decision threshold — flagged as higher risk.")
+    st.metric("Readmission risk score", f"{score:.2f}")
+    if score >= 0.5:
+        st.warning("Above the model's decision threshold (0.5) — flagged as higher risk.")
     else:
-        st.success("Below the model's decision threshold — flagged as lower risk.")
+        st.success("Below the model's decision threshold (0.5) — flagged as lower risk.")
     st.caption(
-        "The dataset's actual readmission rate is ~11%, so anything meaningfully "
-        "above that is elevated risk relative to the population."
+        "This is a model **risk score**, not a calibrated probability. The model "
+        "was trained with balanced class weighting so it catches more true "
+        "readmissions, which pushes scores well above the dataset's real base "
+        "rate as a side effect — so a score of 0.45 does not mean \"a 45% chance "
+        "of readmission.\" Read it as a relative ranking signal (higher = more "
+        "likely to be readmitted compared to other patients scored with this "
+        "same model), not a literal probability."
     )
