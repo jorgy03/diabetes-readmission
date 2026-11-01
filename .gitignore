@@ -1,0 +1,31 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Data (raw/processed data is not version controlled — see data/README.md)
+data/raw/*
+data/processed/*
+data/external/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!data/external/.gitkeep
+
+# Trained model artifacts
+models/*
+!models/.gitkeep
+
+# OS / editor
+.DS_Store
+.vscode/
+*.log
+
+# Claude Code local settings (per-developer, not shared)
+.claude/settings.local.json
