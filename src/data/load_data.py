@@ -8,4 +8,4 @@ def load_raw_data(path=RAW_DATA_FILE) -> pd.DataFrame:
 
     The dataset encodes missing values as "?" rather than NaN.
     """
-    return pd.read_csv(path, na_values="?")
+    return pd.read_csv(path, na_values="?", low_memory=False)
