@@ -29,10 +29,14 @@ def get_model():
 @st.cache_data
 def get_feature_template():
     """All columns the model was trained on, as a one-row all-NaN template —
-    fields the user doesn't fill in get median/mode-imputed by the pipeline."""
+    fields the user doesn't fill in get median/mode-imputed by the pipeline.
+
+    object dtype throughout: a plain float64 NaN column raises a TypeError
+    the moment a string (e.g. age bucket) is assigned into it.
+    """
     df = pd.read_csv(PROCESSED_DATA_DIR / "diabetic_data_clean.csv")
     columns = [c for c in df.columns if c != TARGET_COLUMN]
-    return pd.DataFrame([{c: np.nan for c in columns}])
+    return pd.DataFrame([{c: np.nan for c in columns}], dtype=object)
 
 
 model = get_model()
