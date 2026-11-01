@@ -27,5 +27,5 @@ models/*
 .vscode/
 *.log
 
-# Claude Code local settings (per-developer, not shared)
-.claude/settings.local.json
+# Claude Code local settings/state (per-developer, not shared)
+.claude/
