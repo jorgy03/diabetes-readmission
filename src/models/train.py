@@ -16,10 +16,15 @@ def split_data(df: pd.DataFrame, target_column: str = TARGET_COLUMN):
 
 
 def build_pipeline(X: pd.DataFrame) -> Pipeline:
+    """Random Forest pipeline. min_samples_leaf caps tree depth — with the
+    default of 1, trees grow until every leaf is pure/single-sample and
+    memorize the training set, which swamps whatever class_weight="balanced"
+    is trying to do to the decision boundary."""
     numeric_cols, categorical_cols = get_feature_columns(X.assign(**{TARGET_COLUMN: 0}), TARGET_COLUMN)
     preprocessor = build_preprocessor(numeric_cols, categorical_cols)
     model = RandomForestClassifier(
         n_estimators=200,
+        min_samples_leaf=50,
         class_weight="balanced",
         random_state=RANDOM_STATE,
         n_jobs=-1,
