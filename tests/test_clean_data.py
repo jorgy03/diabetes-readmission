@@ -19,11 +19,26 @@ def test_add_readmission_target_is_binary():
 def test_drop_duplicate_patients_keeps_first_encounter():
     df = pd.DataFrame({
         "patient_nbr": [1, 1, 2],
-        "encounter_order": [1, 2, 1],
+        "encounter_id": [200, 100, 50],
     })
     result = drop_duplicate_patients(df)
     assert len(result) == 2
-    assert result[result["patient_nbr"] == 1]["encounter_order"].iloc[0] == 1
+    assert result[result["patient_nbr"] == 1]["encounter_id"].iloc[0] == 100
+
+
+def test_drop_duplicate_patients_breaks_ties_by_encounter_id_not_row_order():
+    # Deliberately scrambled: each patient's rows are NOT already in
+    # encounter_id order, and patients interleave. Sorting by patient_nbr
+    # alone (no tiebreaker) leaves ties among a patient's rows in whatever
+    # order pandas' sort happens to produce, which can silently keep a
+    # later visit instead of the first. encounter_id as a secondary sort
+    # key must make the "first" choice deterministic and correct regardless.
+    df = pd.DataFrame({
+        "patient_nbr": [3, 1, 2, 1, 3, 2, 1],
+        "encounter_id": [900, 500, 700, 100, 300, 200, 800],
+    })
+    result = drop_duplicate_patients(df).set_index("patient_nbr")["encounter_id"]
+    assert result.to_dict() == {1: 100, 2: 200, 3: 300}
 
 
 def test_categorize_diagnosis_buckets_known_codes():

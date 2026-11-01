@@ -101,8 +101,15 @@ def add_readmission_target(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def drop_duplicate_patients(df: pd.DataFrame) -> pd.DataFrame:
-    """Keep only the first encounter per patient to avoid leakage across visits."""
-    return df.sort_values("patient_nbr").drop_duplicates(subset="patient_nbr", keep="first")
+    """Keep only the first encounter per patient to avoid leakage across visits.
+
+    Sorting by patient_nbr alone doesn't define which row within a patient's
+    group is "first" — pandas' default sort isn't guaranteed stable, so ties
+    on patient_nbr can land in any order. encounter_id (a monotonically
+    assigned row id, the closest thing this dataset has to a timestamp)
+    breaks the tie deterministically.
+    """
+    return df.sort_values(["patient_nbr", "encounter_id"]).drop_duplicates(subset="patient_nbr", keep="first")
 
 
 def drop_sparse_columns(df: pd.DataFrame, columns=COLUMNS_TO_DROP) -> pd.DataFrame:
